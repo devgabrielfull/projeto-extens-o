@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projeto de Extensão</title>
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0ea5e9">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    
+    .unifrakturmaguntia-regular {
+      font-family: "UnifrakturMaguntia", cursive;
+      font-weight: 400;
+      font-style: normal;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800">
+  <!-- Link pular para conteúdo (Acessibilidade) -->
+  <a href="#conteudo-principal"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-sky-700 text-white px-3 py-2 rounded">
+    Ir para o conteúdo principal
+  </a>
+  
+ <header class="bg-blue-100 text-blue-900 p-6">
+ <h1 class="text-3xl font-bold">Empresa de E-commerce para Faculdades</h1>
+</header>
+
+  <main id="app" class="max-w-5xl mx-auto px-4 pb-24">
+    <!-- Navegação responsiva -->
+    <nav class="mt-4" aria-label="Navegação principal">
+      <button
+        class="md:hidden inline-flex items-center gap-2 rounded bg-sky-600 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-400"
+        @click="menuAberto = !menuAberto"
+        :aria-expanded="menuAberto.toString()"
+        aria-controls="menu-principal">
+        ☰ Menu
+      </button>
+      <ul id="menu-principal" class="mt-3 md:mt-0 md:flex md:gap-6"
+        :class="menuAberto ? 'block' : 'hidden md:flex'">
+        <li><a class="hover:underline focus:outline-none focus:ring-2 focus:ring-sky-400" href="#inicio">Início</a></li>
+        <li><a class="hover:underline focus:outline-none focus:ring-2 focus:ring-sky-400" href="#sobre">Sobre</a></li>
+        <li><a class="hover:underline focus:outline-none focus:ring-2 focus:ring-sky-400" href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+    
+    <!-- Seção de boas-vindas com contador reativo -->
+    <section id="inicio" aria-labelledby="sec-intro"
+      class="bg-white rounded-xl shadow p-6 mt-6">
+      <h2 id="sec-intro" class="text-xl font-semibold">Boas-vindas</h2>
+      <p class="mt-2">Contador: <strong class="text-sky-700">{{ contador }}</strong></p>
+      <button
+        class="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+        aria-label="Somar um ao contador"
+        @click="contador++">Somar +1</button>
+    </section>
+    
+    <!-- ÁREA DE CENÁRIOS: escolha 1 (A, B ou C) e cole a seção correspondente mais abaixo -->
+    <section id="sobre" aria-labelledby="vitrine" class="bg-white rounded-xl shadow p-6 mt-6">
+      <h2 id="vitrine" class="text-xl font-semibold">Vitrine</h2>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <article v-for="p in produtos" :key="p.id" class="rounded-lg border border-slate-200 p-4">
+          <h3 class="font-semibold">{{ p.nome }}</h3>
+          <p class="text-slate-600">R$ {{ p.preco.toFixed(2) }}</p>
+          <button class="mt-2 rounded bg-sky-600 px-3 py-1 text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            @click="adicionarCarrinho(p)" aria-label="Adicionar ao carrinho">Adicionar</button>
+        </article>
+      </div>
+    </section>
+    
+    <section id="contato" aria-labelledby="carrinho" class="bg-white rounded-xl shadow p-6 mt-6">
+      <h2 id="carrinho" class="text-xl font-semibold">Carrinho</h2>
+      <p class="mt-2">Itens: <strong class="text-sky-700">{{ carrinho.length }}</strong></p>
+      <ul class="mt-3 space-y-2">
+        <li v-for="(c, idx) in carrinho" :key="idx"
+          class="flex items-center justify-between gap-3 border-b border-slate-200 pb-2">
+          <span>{{ c.nome }} — R$ {{ c.preco.toFixed(2) }}</span>
+          <button class="rounded bg-slate-200 px-3 py-1 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            @click="removerCarrinho(idx)" aria-label="Remover do carrinho">Remover</button>
+        </li>
+      </ul>
+    </section>
+  </main>
+  
+  <footer class="max-w-5xl mx-auto px-4 py-8 text-sm text-slate-500">
+    <p>2025 — Projeto de Extensão Front-end</p>
+    <p class="unifrakturmaguntia-regular">Texto de teste com a fonte UnifrakturMaguntia</p>
+  </footer>
+  
+  <!-- Vue 3 (CDN, produção) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  
+  <!-- App -->
+  <script>
+    // Inicializando a aplicação Vue
+    const { createApp } = Vue;
+    
+    createApp({
+      data() {
+        return {
+          contador: 0,
+          menuAberto: false,
+          produtos: [
+            { id: 1, nome: 'Produto A', preco: 29.99 },
+            { id: 2, nome: 'Produto B', preco: 49.99 },
+            { id: 3, nome: 'Produto C', preco: 19.99 },
+            { id: 4, nome: 'Produto D', preco: 39.99 },
+            { id: 5, nome: 'Produto E', preco: 59.99 },
+            { id: 6, nome: 'Produto F', preco: 24.99 }
+          ],
+          carrinho: []
+        }
+      },
+      methods: {
+        adicionarCarrinho(produto) {
+          this.carrinho.push(produto);
+        },
+        removerCarrinho(index) {
+          this.carrinho.splice(index, 1);
+        }
+      }
+    }).mount('#app');
+  </script>
+  
+  <!-- Registro do Service Worker (PWA) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
